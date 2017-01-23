@@ -1,6 +1,6 @@
 # conky-toggl-button
 A toggl button for my i3-bar running with conky
-
+![Screenshot of the bar](/screenshot.png)
 # Run via crontab
 ```
 */1 * * * * python togglconky.py
