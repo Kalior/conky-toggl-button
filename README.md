@@ -47,7 +47,7 @@ while read;do
       python togglconky.py
       ;;
     \"toggl_project\")
-      python toggl_change_project.py $X 1320
+      python toggl_change_project.py $X 1700
       python togglconky.py
       ;;
     *)
