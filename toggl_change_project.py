@@ -24,7 +24,14 @@ def update_time_entry_project(project_id):
   except:
     return
 
-def update_projects(frame):
+def update_list(frame):
+  update_projects()
+  frame.destroy()
+  new_frame = Frame()
+  new_frame.grid(row=0,column=0)
+  add_projects_to_list(new_frame)
+
+def update_projects():
   try:
     url_clients = 'https://www.toggl.com/api/v8/clients'
     clients_request = requests.get(url_clients, auth=auth_fields)
@@ -40,10 +47,6 @@ def update_projects(frame):
           all_projects.append(project)
     with open('/home/kalior/projects/conky-toggl-button/toggl_projects', 'w') as f:
       f.write(json.dumps(all_projects))
-    frame.destroy()
-    new_frame = Frame()
-    new_frame.grid(row=0,column=0)
-    add_projects_to_list(new_frame)
   except:
     return
 
@@ -53,9 +56,13 @@ def get_projects():
     return all_projects
 
 def add_projects_to_list(frame):
-  b = Button(frame, text = "Update projects", command = lambda f=frame: update_projects(f), font = "Inconsolata 14")
+  b = Button(frame, text = "Update projects", command = lambda f=frame: update_list(f), font = "Inconsolata 14")
   b.pack(fill=X)
-  for project in get_projects():
+  all_projects = get_projects()
+  if not all_projects:
+    update_projects()
+    all_projects = get_projects()
+  for project in all_projects:
     b = Button(frame, text = project['client_name'] + " " + project['name'], command = lambda id=project['id']: do_and_quit(id), font = "Inconsolata 14")
     b.pack(fill=X)
 
