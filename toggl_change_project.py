@@ -24,8 +24,7 @@ def update_time_entry_project(project_id):
   except:
     return
 
-
-def get_projects():
+def update_projects(frame):
   try:
     url_clients = 'https://www.toggl.com/api/v8/clients'
     clients_request = requests.get(url_clients, auth=auth_fields)
@@ -39,9 +38,26 @@ def get_projects():
         for project in projects:
           project['client_name'] = client['name']
           all_projects.append(project)
-    return all_projects
+    with open('/home/kalior/projects/conky-toggl-button/toggl_projects', 'w') as f:
+      f.write(json.dumps(all_projects))
+    frame.destroy()
+    new_frame = Frame()
+    new_frame.grid(row=0,column=0)
+    add_projects_to_list(new_frame)
   except:
     return
+
+def get_projects():
+  with open('/home/kalior/projects/conky-toggl-button/toggl_projects', 'r') as f:
+    all_projects = json.loads(f.read())
+    return all_projects
+
+def add_projects_to_list(frame):
+  b = Button(frame, text = "Update projects", command = lambda f=frame: update_projects(f), font = "Inconsolata 14")
+  b.pack(fill=X)
+  for project in get_projects():
+    b = Button(frame, text = project['client_name'] + " " + project['name'], command = lambda id=project['id']: do_and_quit(id), font = "Inconsolata 14")
+    b.pack(fill=X)
 
 def do_and_quit(project_id):
   master.destroy()
@@ -56,11 +72,12 @@ master.title("Toggl Conky pop-up")
 x = int(sys.argv[1])
 y = int(sys.argv[2])
 
-master.geometry('+%d+%d' % (x, y))
+master.geometry('+%d+%d' % (x, y - len(get_projects())*25))
 
-for project in get_projects():
-  b = Button(master, text = project['client_name'] + " " + project['name'], command = lambda id=project['id']: do_and_quit(id), font = "Inconsolata 14")
-  b.pack(fill=X)
+frame = Frame(master)
+frame.grid(row=0,column=0)
+
+add_projects_to_list(frame)
 
 master.bind('<Escape>', quit)
 mainloop( )
