@@ -20,7 +20,9 @@ def toggl_running():
     else:
       epoch_time = int(time.time())
       duration = epoch_time + data['duration']
-      values['entry'] = str(datetime.timedelta(seconds=duration)) + " " + data['description']
+      entry_time = datetime.timedelta(seconds=duration)
+      # stripping the seconds isn't really robust here
+      values['entry'] = str(entry_time)[:4] + " " + data['description']
       values['project_name'] = "-"
       if(data['pid']):
         url_project = 'https://www.toggl.com/api/v8/projects/' + str(data['pid'])
