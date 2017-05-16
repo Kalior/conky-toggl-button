@@ -3,10 +3,11 @@ import requests
 # parsing json data
 import json
 import time
+import sys
 import datetime
 
 def toggl_running():
-  values = {'entry': "-", 'project_name': ""}
+  values = {'entry': "", 'project_name': ""}
   try:
     auth_fields = requests.auth.HTTPBasicAuth(API_TOKEN,'api_token')
 
@@ -16,7 +17,7 @@ def toggl_running():
     data = json.loads(entry_request.text)['data']
 
     if(data == None):
-      values['entry'] = "-"
+      values['entry'] = ""
     else:
       epoch_time = int(time.time())
       duration = epoch_time + data['duration']
@@ -36,10 +37,14 @@ def toggl_running():
     return values
 
 if __name__ == "__main__":
-
   entry_data = toggl_running()
-  #print(entry_data)
-  with open('/home/kalior/projects/conky-toggl-button/toggl_running', 'w') as f:
-      f.write(entry_data['entry'])
-  with open('/home/kalior/projects/conky-toggl-button/toggl_project', 'w') as f:
-      f.write(entry_data['project_name'])
+  if(len(sys.argv) > 1 and sys.argv[1] == "print"):
+    string = entry_data['entry']
+    if(entry_data['project_name']):
+      string += " " + entry_data['project_name']
+    print(string)
+  else:
+    with open('/home/kalior/projects/conky-toggl-button/toggl_running', 'w') as f:
+        f.write(entry_data['entry'])
+    with open('/home/kalior/projects/conky-toggl-button/toggl_project', 'w') as f:
+        f.write(entry_data['project_name'])
